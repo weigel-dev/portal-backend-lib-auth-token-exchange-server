@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 public class TokenConfiguration {
 
     private final String issuer;
+    private final String audience;
     private final long accessTokenValiditySeconds;
     private final long refreshTokenValiditySeconds;
     private final RSAPrivateKey privateKey;

@@ -1,12 +1,23 @@
 package dev.weigel.authlib.service;
 
+import java.util.Map;
+
+import dev.weigel.authlib.service.model.SessionResult;
+import jakarta.annotation.Nullable;
+
 public interface SessionService {
 
-    void createSession(String userId, String externalUserId, String provider, String refreshTokenHash);
+        SessionResult createSession(String userId,
+                        String externalUserId,
+                        String provider);
 
-    void updateSession(String userId, String newRefreshTokenHash);
+        SessionResult updateSession(String userId,
+                        String newRefreshTokenHash,
+                        @Nullable Map<String, String> metadata);
 
-    String validateRefreshToken(String refreshTokenHash);
+        SessionResult validateRefreshToken(String refreshTokenHash,
+                        @Nullable Map<String, String> metadata);
 
-    void revokeSession(String refreshToken);
+        void revokeSession(String refreshToken);
+
 }

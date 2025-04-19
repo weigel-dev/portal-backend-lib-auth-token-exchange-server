@@ -2,6 +2,8 @@ package dev.weigel.authlib.service;
 
 import org.springframework.stereotype.Component;
 
+import dev.weigel.authlib.exception.UnknownAuthenticationProviderException;
+
 import java.util.Map;
 
 @Component
@@ -16,7 +18,7 @@ public class ExternalAuthenticationProviderResolver {
     public ExternalAuthenticationService resolve(String externalProvider) {
         ExternalAuthenticationService service = providers.get(externalProvider);
         if (service == null) {
-            throw new RuntimeException(
+            throw new UnknownAuthenticationProviderException(
                     "No external authentication service registered for provider: " + externalProvider);
         }
         return service;

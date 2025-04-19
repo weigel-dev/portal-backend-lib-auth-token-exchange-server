@@ -1,10 +1,12 @@
 package dev.weigel.authlib.token;
 
+import dev.weigel.authlib.service.model.SessionResult;
+
 public interface TokenService {
 
-    String createAccessToken(String token);
+    String createAccessToken(SessionResult session);
 
-    String createRefreshToken(String token);
+    String createRefreshToken(SessionResult session);
 
     String hashToken(String token);
 

@@ -6,6 +6,7 @@ import dev.weigel.authlib.controller.model.RefreshRequest;
 import dev.weigel.authlib.controller.model.RefreshResponse;
 import dev.weigel.authlib.exception.ExternalAuthenticationFailedException;
 import dev.weigel.authlib.service.model.ExternalAuthenticationResult;
+import dev.weigel.authlib.service.model.SessionResult;
 import dev.weigel.authlib.token.TokenService;
 
 import org.springframework.stereotype.Service;
@@ -41,22 +42,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         String externalUserId = result.getExternalUserId();
-        String email = result.getEmail();
-
         String internalUserId = userMappingProvider.resolveInternalUserId(
                 request.getExternalProvider(),
                 externalUserId,
-                email);
-        String accessToken = tokenService.createAccessToken(internalUserId);
-        String refreshToken = tokenService.createRefreshToken(internalUserId);
+                result.getEmail());
 
-        String refreshTokenHash = tokenService.hashToken(refreshToken);
-
-        sessionService.createSession(
+        SessionResult session = sessionService.createSession(
                 internalUserId,
                 externalUserId,
-                request.getExternalProvider(),
-                refreshTokenHash);
+                request.getExternalProvider());
+
+        String accessToken = tokenService.createAccessToken(session);
+        String refreshToken = tokenService.createRefreshToken(session);
+
+        String refreshTokenHash = tokenService.hashToken(refreshToken);
+        sessionService.updateSession(session.getInternalUserId(), refreshTokenHash, request.getMetadata());
 
         return new AuthResponse(accessToken, refreshToken);
     }
@@ -64,18 +64,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public RefreshResponse refresh(RefreshRequest request) {
         String refreshToken = request.getRefreshToken();
-
         String refreshTokenHash = tokenService.hashToken(refreshToken);
+        SessionResult session = sessionService.validateRefreshToken(refreshTokenHash, request.getMetadata());
 
-        String internalUserId = sessionService.validateRefreshToken(refreshTokenHash);
-
-        String newAccessToken = tokenService.createAccessToken(internalUserId);
-        String newRefreshToken = tokenService.createRefreshToken(internalUserId);
+        String newAccessToken = tokenService.createAccessToken(session);
+        String newRefreshToken = tokenService.createRefreshToken(session);
 
         String newRefreshTokenHash = tokenService.hashToken(newRefreshToken);
-
-        sessionService.updateSession(internalUserId, newRefreshTokenHash);
+        sessionService.updateSession(session.getInternalUserId(), newRefreshTokenHash, request.getMetadata());
 
         return new RefreshResponse(newAccessToken, newRefreshToken);
     }
+
 }

@@ -8,11 +8,12 @@ import com.nimbusds.jwt.SignedJWT;
 import dev.weigel.authlib.exception.TokenCreationException;
 import dev.weigel.authlib.exception.TokenHashingException;
 import dev.weigel.authlib.service.ClaimsProvider;
+import dev.weigel.authlib.service.model.SessionResult;
+
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPrivateKey;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
@@ -33,14 +34,15 @@ public class JwtTokenService implements TokenService {
     }
 
     @Override
-    public String createAccessToken(String internalUserId) {
+    public String createAccessToken(SessionResult session) {
         Instant now = Instant.now();
         Instant expiration = now.plusSeconds(tokenConfiguration.getAccessTokenValiditySeconds());
 
-        Map<String, String> claims = claimsProvider.provideClaims(internalUserId);
+        Map<String, String> claims = claimsProvider.provideClaims(session.getInternalUserId(), session.getMetadata());
 
         JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder()
-                .subject(internalUserId)
+                .subject(session.getInternalUserId())
+                .audience(tokenConfiguration.getAudience())
                 .issuer(tokenConfiguration.getIssuer())
                 .issueTime(Date.from(now))
                 .expirationTime(Date.from(expiration));
@@ -66,12 +68,13 @@ public class JwtTokenService implements TokenService {
     }
 
     @Override
-    public String createRefreshToken(String internalUserId) {
+    public String createRefreshToken(SessionResult session) {
         Instant now = Instant.now();
         Instant expiration = now.plusSeconds(tokenConfiguration.getRefreshTokenValiditySeconds());
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(internalUserId)
+                .subject(session.getInternalUserId())
+                .audience(tokenConfiguration.getIssuer())
                 .issuer(tokenConfiguration.getIssuer())
                 .issueTime(Date.from(now))
                 .expirationTime(Date.from(expiration))
