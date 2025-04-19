@@ -1,5 +1,7 @@
 # Portal Backend Lib - Auth Token Exchange Server
 
+> Disclaimer: no testing implemented and most of the code is generated. Just to prepare for a poc.
+
 ## Overview
 
 This library provides a **token exchange server logic** for spring backend services.
@@ -35,9 +37,9 @@ The goal is to separate **identity validation** from **internal session manageme
 
 ```xml
 <dependency>
-  <groupId>dev.weigel</groupId>
-  <artifactId>portal-backend-lib-auth-token-exchange-server</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <groupId>dev.weigel.portal</groupId>
+  <artifactId>backend-lib-auth-token-exchange-server</artifactId>
+  <version>{{VERSION}}</version>
 </dependency>
 ```
 

@@ -1,0 +1,32 @@
+# Maven target directory
+/target/
+
+# Logs
+*.log
+
+# Eclipse / VSCode / IntelliJ IDEA project files
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.jar
+*.war
+*.ear
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# Environment files
+.env
